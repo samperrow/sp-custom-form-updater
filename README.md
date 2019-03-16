@@ -1,2 +1,2 @@
 # SharePoint Custom Form Updater
-A way to make bulk updates to SharePoint custom forms
+Make bulk updates to SharePoint custom forms with client side JavaScript and the JavaScript Object Model.
