@@ -22,8 +22,15 @@ var init = function() {
         { filePath: sourceFilePath + '/EditForm.txt', title: 'EditForm' },
         { filePath: sourceFilePath + '/DispForm.txt', title: 'DispForm' }
     ];
+    
+    var sites = [
+        "https://example.sharepoint.com/subsite1",
+        "https://example.sharepoint.com/subsite2",
+        "https://example.sharepoint.com/subsite3",
+        "https://example.sharepoint.com/subsite4"
+    ];
 
-    return CustomFormUpdater(listName, sourceFiles);
+    return CustomFormUpdater(listName, sourceFiles, sites);
 
 }();
 
