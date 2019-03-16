@@ -17,22 +17,15 @@
 var init = function() {
 
     var listName = 'Appointments';
-
-    var sourceFilePath = "https://carepoint.health.mil/sites/VHCCA/assets/formUpdater/appts/";
+    var sourceFilePath = "https://example.sharepoint.com/assets";
 
     var sourceFiles = [
-        { filePath: sourceFilePath + 'NewForm.txt',  title: 'NewForm'  },
-        { filePath: sourceFilePath + 'EditForm.txt', title: 'EditForm' },
-        { filePath: sourceFilePath + 'DispForm.txt', title: 'DispForm' }
+        { filePath: sourceFilePath + '/NewForm.txt',  title: 'NewForm'  },
+        { filePath: sourceFilePath + '/EditForm.txt', title: 'EditForm' },
+        { filePath: sourceFilePath + '/DispForm.txt', title: 'DispForm' }
     ];
 
-    var sites = [
-        "https://carepoint.health.mil/sites/VHCCA/RHCAtlantic/Dev",
-        // "https://carepoint.health.mil/sites/VHCCA/RHCCentral/CollierHC",
-        // "https://carepoint.health.mil/sites/VHCCA/RHCPacific/Test"
-    ];
-
-    return CustomFormUpdater(listName, sourceFiles, sites);
+    return CustomFormUpdater(listName, sourceFiles);
 
 }();
 
@@ -42,20 +35,15 @@ var init = function() {
 
 function CustomFormUpdater(listName, sourceFiles, sites) {
 
+    // if the sites parameter is available, use that, otherwise collect all subsites URL's.
+    (sites) ? GetListGuidsForSubsites(sites) : GetSubSiteUrls();
+
+
+
     // Part 1.
-    // get all URL's of subsites in a site collection
-    // SP.SOD.executeFunc('sp.js', 'SP.ClientContext', GetSubSiteUrls);
+    // Collect all URL's of subsites in a site collection
+    function GetSubSiteUrls() {
 
-    if (sites) {
-        getListGuidsForSubsites();
-    } 
-    // else {
-    //     GetSubSiteUrls();
-    // }
-
-
-
-    var GetSubSiteUrls = function () {
         function enumWebs(propertiesToRetrieve, success, error) {
             var ctx = new SP.ClientContext.get_current();
             var rootWeb = ctx.get_site().get_rootWeb();
@@ -88,8 +76,8 @@ function CustomFormUpdater(listName, sourceFiles, sites) {
             for (var i = 1; i < sites.length; i++) {
                 urls.push(sites[i].get_url());
             }
-            console.log(urls);
-            return getListGuidsForSubsites(urls); // uncomment this to activate the script and update forms!
+
+            return GetListGuidsForSubsites(urls);
         }
 
         function fail(sender, args) {
@@ -101,9 +89,10 @@ function CustomFormUpdater(listName, sourceFiles, sites) {
 
     /*
     * Part 2.
-    * Filter down list of provided subsites and return the ones that have the targeted list
+    * Filter down array of subsite URL's and return the ones that have the specified list.
+    * @param is an array of strings, each of which is a subsite URL.
     */
-    function getListGuidsForSubsites() {
+    function GetListGuidsForSubsites(sites) {
         var targetSites = [];
         var siteIndex = 0;
         
@@ -133,7 +122,7 @@ function CustomFormUpdater(listName, sourceFiles, sites) {
             currentcontext.executeQueryAsync(
                 function() {
                     var listGuid = list.get_id().toString();
-                    console.log('list found at ' + siteURL);
+                    console.log('List found at ' + siteURL);
 
                     targetSites.push({
                         subsiteURL: siteURL,
@@ -160,6 +149,7 @@ function CustomFormUpdater(listName, sourceFiles, sites) {
     * a) get source file content (from .txt files)
     * b) get web part ID for each form
     * c) create new form with the web part ID's, listGuids, and siteURL
+    * @param is an array of objects, each containing the subsite URL, list name, and the list GUID specified to that site.
     */
     function GetListAndFormData(targetSites) {
 
@@ -273,6 +263,7 @@ function CustomFormUpdater(listName, sourceFiles, sites) {
     /*
     * Part 4.
     * update the forms for each target site, one at a time.
+    * @param is an array of objects, each of which
     */
     var UpdateForms = function(targetSites) {
 
@@ -280,7 +271,7 @@ function CustomFormUpdater(listName, sourceFiles, sites) {
         var formIndex = 0;
 
         function init() {
-            return (siteIndex < targetSites.length) ? controller() : console.log( 'Finished the update!');
+            return (siteIndex < targetSites.length) ? controller() : console.log('Finished the update!');
         }
         init();
 
