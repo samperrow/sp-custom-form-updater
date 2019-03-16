@@ -1,19 +1,17 @@
 /*
- * @name SPCustomFormUpdater
+ * @name SP Custom Form Updater
  * Version 1.0.0
  * No dependencies!
- * @description
- * @documentation
- * @author Sam Perrow sam.perrow399@gmail.com
+ * @description A way to utilize client side JSOM to make updates to custom .aspx SharePoint forms.
+ * @documentation https://github.com/samperrow/sp-custom-form-updater
+ * @author Sam Perrow https:sharepointhacks.com
  *
  * Copyright 2019 Sam Perrow (email : sam.perrow399@gmail.com)
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
 */
 
-// bugs:
-// 1. 
-
+// Example of how to initialize the script.
 var init = function() {
 
     var listName = 'Appointments';
@@ -39,11 +37,11 @@ function CustomFormUpdater(listName, sourceFiles, sites) {
     (sites) ? GetListGuidsForSubsites(sites) : GetSubSiteUrls();
 
 
-
     // Part 1.
     // Collect all URL's of subsites in a site collection
     function GetSubSiteUrls() {
-
+        
+        // borrowed from Vadim Gremyachev: https://sharepoint.stackexchange.com/questions/137996/get-all-subsites-and-rootweb-of-a-site-collection-using-jsom#answer-137998
         function enumWebs(propertiesToRetrieve, success, error) {
             var ctx = new SP.ClientContext.get_current();
             var rootWeb = ctx.get_site().get_rootWeb();
